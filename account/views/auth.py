@@ -21,7 +21,7 @@ class RegistrationViewSet(ViewSet):
                 return Response(
                     data={
                         "code": 5,
-                        "status": "fail",
+                        "status": False,
                         "data": {"message": "User with this email already exists"},
                     },
                     status=401,
@@ -32,7 +32,7 @@ class RegistrationViewSet(ViewSet):
                     return Response(
                     data={
                         "code": 5,
-                        "status": "fail",
+                        "status": False,
                         "data": {"message": f"Invalid {field} field"},
                     },
                     status=401,
@@ -67,7 +67,7 @@ class RegistrationViewSet(ViewSet):
         return Response(
                     data={
                         "code": 5,
-                        "status": "fail",
+                        "status": False,
                         "data": {"message": "Invalid Email field"},
                     },
                     status=401,
@@ -86,7 +86,7 @@ class RegistrationViewSet(ViewSet):
             return Response(
                     data={
                         "code": 5,
-                        "status": "fail",
+                        "status": False,
                         "data": {"message": "invalid Email or Password"},
                     },
                     status=401,

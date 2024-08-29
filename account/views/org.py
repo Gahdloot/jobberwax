@@ -21,7 +21,7 @@ class OrganisationViewset(ViewSet):
                 return Response(
                 data={
                     "code": 5,
-                    "status": "fail",
+                    "status": False,
                     "data": {"message": f"Invalid {field} field"},
                 },
                 status=401,
@@ -47,7 +47,7 @@ class OrganisationViewset(ViewSet):
             org_user.save()
             return Response(
                     data={
-                        "status": "success",
+                        "status": True,
                         "data": {"organisation": OrganisationSerializer(org).data},
                     },
                     status=200,
@@ -56,7 +56,7 @@ class OrganisationViewset(ViewSet):
             return Response(
                     data={
                         "code": 4,
-                        "status": "fail",
+                        "status": False,
                         "data": {"message": f"{exc}"},
                     },
                     status=400,
@@ -74,7 +74,7 @@ class OrganisationViewset(ViewSet):
             return Response(
                     data={
                         "code": 1,
-                        "status": "fail",
+                        "status": False,
                         "data": {"message": "Cannot find organisation"},
                     },
                     status=404,
@@ -95,7 +95,7 @@ class OrganisationViewset(ViewSet):
             org_user.save()
             return Response(
                     data={
-                        "status": "success",
+                        "status": True,
                         "data": {"message": "Added to organisation"},
                     },
                     status=200,
@@ -104,7 +104,7 @@ class OrganisationViewset(ViewSet):
             return Response(
                     data={
                         "code": 1,
-                        "status": "fail",
+                        "status": False,
                         "data": {"message": "Cannot find organisation"},
                     },
                     status=404,
@@ -119,7 +119,7 @@ class OrganisationViewset(ViewSet):
                 return Response(
                     data={
                         "code": 1,
-                        "status": "fail",
+                        "status": False,
                         "data": {"message": "Only Organisation Owner Can accept member"},
                     },
                     status=403,
@@ -130,7 +130,7 @@ class OrganisationViewset(ViewSet):
             org.save()
             return Response(
                     data={
-                        "status": "success",
+                        "status": True,
                         "data": {"message": "Added user to organisation"},
                     },
                     status=200,
@@ -139,7 +139,7 @@ class OrganisationViewset(ViewSet):
             return Response(
                     data={
                         "code": 1,
-                        "status": "fail",
+                        "status": False,
                         "data": {"message": f"{exc}"},
                     },
                     status=404,
@@ -150,7 +150,7 @@ class OrganisationViewset(ViewSet):
         serializer = OrganisationUserSerializer(org_users, many=True).data
         return Response(
                     data={
-                        "status": "success",
+                        "status": True,
                         "data": {"Organisations": serializer},
                     },
                     status=200,
@@ -166,7 +166,7 @@ class OrganisationUserViewset(ViewSet):
         serializer = OrganisationUserSerializer(org_users, many=True).data
         return Response(
                     data={
-                        "status": "success",
+                        "status": True,
                         "data": {"Organisations": serializer},
                     },
                     status=200,

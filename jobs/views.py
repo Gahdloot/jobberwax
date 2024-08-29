@@ -19,7 +19,7 @@ class PublicJobViewsets(ViewSet):
             serializer = JobSerializer(jobs).data
             return Response(
                     data={
-                        "status": "success",
+                        "status": True,
                         "data": {"jobs": serializer},
                     },
                     status=200,
@@ -28,7 +28,7 @@ class PublicJobViewsets(ViewSet):
             return Response(
                     data={
                         "code": 4,
-                        "status": "fail",
+                        "status": False,
                         "data": {"message": "Cannot get Job"},
                     },
                     status=400,
@@ -41,7 +41,7 @@ class PublicJobViewsets(ViewSet):
             serializer = JobSerializer(jobs, many=True).data
             return Response(
                     data={
-                        "status": "success",
+                        "status": True,
                         "data": {"jobs": serializer},
                     },
                     status=200,
@@ -50,7 +50,7 @@ class PublicJobViewsets(ViewSet):
             return Response(
                     data={
                         "code": 4,
-                        "status": "fail",
+                        "status": False,
                         "data": {"message": f"{Exc}"},
                     },
                     status=400,
@@ -68,7 +68,7 @@ class JobViewset(ViewSet):
                 return Response(
                 data={
                     "code": 5,
-                    "status": "fail",
+                    "status": False,
                     "data": {"message": f"Invalid {field} field"},
                 },
                 status=401,
@@ -80,7 +80,7 @@ class JobViewset(ViewSet):
             return Response(
                 data={
                     "code": 5,
-                    "status": "fail",
+                    "status": False,
                     "data": {"message": "Organisation does not Exists"},
                 },
                 status=404,
@@ -91,7 +91,7 @@ class JobViewset(ViewSet):
                 return Response(
                 data={
                     "code": 5,
-                    "status": "fail",
+                    "status": False,
                     "data": {"message": "Expected a dictionary '{}' on field"},
                 },
                 status=404,
@@ -107,7 +107,7 @@ class JobViewset(ViewSet):
             job.save()
             return Response(
                     data={
-                        "status": "success",
+                        "status": True,
                         "data": {"jobs": JobSerializer(job).data}
                     },
                     status=200,
@@ -116,7 +116,7 @@ class JobViewset(ViewSet):
             return Response(
                 data={
                     "code": 4,
-                    "status": "fail",
+                    "status": False,
                     "data": {"message": f"{e}"},
                 },
                 status=400,
@@ -130,7 +130,7 @@ class JobViewset(ViewSet):
             return Response(
                     data={
                         "code": 1,
-                        "status": "fail",
+                        "status": False,
                         "data": {"message": "Cannot find organisation"},
                     },
                     status=404,
@@ -140,7 +140,7 @@ class JobViewset(ViewSet):
             serializer = JobSerializer(jobs, many=True).data
             return Response(
                     data={
-                        "status": "success",
+                        "status": True,
                         "data": {"jobs": serializer},
                     },
                     status=200,
@@ -149,7 +149,7 @@ class JobViewset(ViewSet):
             return Response(
                     data={
                         "code": 4,
-                        "status": "fail",
+                        "status": False,
                         "data": {"message": f"{Exc}"},
                     },
                     status=400,
@@ -163,7 +163,7 @@ class JobViewset(ViewSet):
             #update endpoint here
             return Response(
                     data={
-                        "status": "success",
+                        "status": True,
                         "data": {"jobs": serializer},
                     },
                     status=200,
@@ -172,7 +172,7 @@ class JobViewset(ViewSet):
             return Response(
                     data={
                         "code": 4,
-                        "status": "fail",
+                        "status": False,
                         "data": {"message": "Cannot get Job"},
                     },
                     status=404,
@@ -189,7 +189,7 @@ class ApplicationViewset(ViewSet):
             if Organisation.objects.filter(id=payload.get("organisation")).exists() is True:
                 return Response(
                     data={
-                        "status": "fail",
+                        "status": False,
                         "data": {"message": "Cannot get Organisation"},
                     },
                     status=404,
@@ -203,7 +203,7 @@ class ApplicationViewset(ViewSet):
             application.save()
             return Response(
                     data={
-                        "status": "success",
+                        "status": True,
                         "data": {"message": "Application Sent"},
                     },
                     status=201,
@@ -212,7 +212,7 @@ class ApplicationViewset(ViewSet):
             return Response(
                     data={
                         "code": 4,
-                        "status": "fail",
+                        "status": False,
                         "data": {"message": f"{exe}"},
                     },
                     status=400,
