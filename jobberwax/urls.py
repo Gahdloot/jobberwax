@@ -21,7 +21,7 @@ from account.views import RegistrationViewSet, OrganisationUserViewset, Organisa
 from jobs.views import PublicJobViewsets, JobViewset, ApplicationViewset
 
 apiRouter = DefaultRouter(trailing_slash=False)
-apiRouter.register(r"auth", RegistrationViewSet, basename="user-reg")
+apiRouter.register(r"account", RegistrationViewSet, basename="user-reg")
 apiRouter.register(r"org-user", OrganisationUserViewset, basename="org-user")
 apiRouter.register(r"org", OrganisationViewset, basename="org")
 apiRouter.register(r"public/job", PublicJobViewsets, basename="public-job")

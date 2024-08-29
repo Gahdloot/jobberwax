@@ -12,7 +12,8 @@ from account.authenticate import create_access_token, create_refresh_token
 class RegistrationViewSet(ViewSet):
     authentication_classes = []
 
-    def create(self, request):
+    @action(detail=False, methods=['post'], url_path='create')
+    def custom_create(self, request):
         payload = request.data
 
         if payload.get("email") is not None and isinstance(payload.get("email"), str) and len(payload.get("email")) > 4:
@@ -25,7 +26,7 @@ class RegistrationViewSet(ViewSet):
                     },
                     status=401,
                 )
-            required_field = ["password", "first_name", "lastname"]
+            required_field = ["password", "first_name", "last_name"]
             for field in required_field:
                 if payload.get(field) is None or len(payload.get(field)) < 3 or isinstance(payload.get("email"), str) is False:
                     return Response(
