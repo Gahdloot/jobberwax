@@ -15,5 +15,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy project
 COPY . /app/
 
+RUN python manage.py migrate
+RUN python manage.py collectstatic --noinput
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8008"]
+# Start Gunicorn server
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "myproject.wsgi:application"]
