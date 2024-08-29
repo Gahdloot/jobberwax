@@ -13,7 +13,6 @@ class UserSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "full_name",
-            "user_type",
             "email"
         )
 

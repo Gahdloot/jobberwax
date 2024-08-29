@@ -13,18 +13,19 @@ from secrets import token_urlsafe
 class OrganisationViewset(ViewSet):
     authentication_classes = [APIAuthentication]
 
-    def create(self, request):
+    @action(detail=False, methods=['post'], url_path='create')
+    def custom_create(self, request):
         payload = request.data
         required_field = ["name", "city", "state", "country"]
         for field in required_field:
-            if payload.get(field) is None or len(payload.get(field)) < 3 or isinstance(payload.get("email"), str) is False:
+            if payload.get(field) is None or len(payload.get(field)) < 3 or isinstance(field, str) is False:
                 return Response(
                 data={
                     "code": 5,
                     "status": False,
                     "data": {"message": f"Invalid {field} field"},
                 },
-                status=401,
+                status=400,
             )
         try:
 
@@ -81,26 +82,43 @@ class OrganisationViewset(ViewSet):
                 )
         
 
-    @action(detail=True, methods=["post"])
+    @action(detail=True, methods=['post'], url_path='staff/join')
     def join(self, request, pk):
         payload = request.data
+
         try:
             org = Organisation.objects.get(id=pk)
             if org.staff_access_code == payload.get("access_code"):
+                if OrganisationUser.objects.filter(organisation=org, user=request.user).exists():
+                    return Response(
+                        data={
+                            "status": False,
+                            "data": {"message": "User already Exists in organisation"},
+                        },
+                        status=400,
+                    )
                 org_user = OrganisationUser(
                 organisation=org,
                 user=request.user,
                 role="UNASSIGNED",
-            )
-            org_user.save()
-            return Response(
-                    data={
-                        "status": True,
-                        "data": {"message": "Added to organisation"},
-                    },
-                    status=200,
                 )
-        except Exception:
+                org_user.save()
+                return Response(
+                        data={
+                            "status": True,
+                            "data": {"message": "Added to organisation"},
+                        },
+                        status=200,
+                    )
+            return Response(
+                        data={
+                            "status": False,
+                            "data": {"message": "Invalid Code Access Code"},
+                        },
+                        status=400,
+                    )
+        except Exception as exe:
+            print(exe)
             return Response(
                     data={
                         "code": 1,
@@ -111,7 +129,8 @@ class OrganisationViewset(ViewSet):
                 )
         
     @action(detail=True, methods=["post"])
-    def accept(self, request, pk, uid):
+    def accept(self, request, pk):
+        uid = request.GET.get("user", "123")
         payload = request.data
         try:
             org = Organisation.objects.get(id=pk)
@@ -123,6 +142,15 @@ class OrganisationViewset(ViewSet):
                         "data": {"message": "Only Organisation Owner Can accept member"},
                     },
                     status=403,
+                )
+            if OrganisationUser.objects.filter(id=uid).exists() is False:
+                return Response(
+                    data={
+                        "code": 1,
+                        "status": False,
+                        "data": {"message": "cannot Get User"},
+                    },
+                    status=404,
                 )
             org_user = OrganisationUser.objects.get(id=uid)
             org_user.accepted = True
@@ -136,11 +164,12 @@ class OrganisationViewset(ViewSet):
                     status=200,
                 )
         except Exception as exc:
+            print(exc)
             return Response(
                     data={
                         "code": 1,
                         "status": False,
-                        "data": {"message": f"{exc}"},
+                        "data": {"message": "cannot Get organisation"},
                     },
                     status=404,
                 )

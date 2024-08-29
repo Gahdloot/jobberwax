@@ -4,7 +4,7 @@ FROM python:3.11-slim
 ENV PYTHONDONTWRITEBYTECODE TRUE
 ENV PYTHONUNBUFFERED TRUE
 
-COPY requirements.txt /propelafrica/requirements.txt
+COPY requirements.txt /app/requirements.txt
 
 # Set working directory
 WORKDIR /app
@@ -13,7 +13,7 @@ WORKDIR /app
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy project
-COPY . /propelafrica
+COPY . /app/
 
 
-ENTRYPOINT /propelafrica/entrypoint.sh
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8008"]

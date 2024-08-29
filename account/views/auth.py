@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 from account.models import User, Organisation, OrganisationUser
 from account.authenticate import create_access_token, create_refresh_token
+from account.serializer import UserSerializer
 
 
 class RegistrationViewSet(ViewSet):
@@ -96,7 +97,7 @@ class RegistrationViewSet(ViewSet):
             return Response(
                 data={
                     "code": 5,
-                    "status": "failed",
+                    "status": False,
                     "data": {"message": "invalid login credentials"},
                 },
                 status=401,
@@ -105,7 +106,7 @@ class RegistrationViewSet(ViewSet):
             return Response(
                 data={
                     "code": 5,
-                    "status": "failed",
+                    "status": False,
                     "data": {"message": "user is blacklisted, kindly contact admin"},
                 },
                 status=401,
@@ -127,6 +128,6 @@ class RegistrationViewSet(ViewSet):
             secure=True,
             samesite="None",
         )
-        response.data = {"token": access_token, "user": user.id}
+        response.data = {"auth_credentials": access_token, "user": UserSerializer(user).data}
         response.status_code = 200
         return response
