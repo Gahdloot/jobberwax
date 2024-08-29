@@ -19,4 +19,4 @@ RUN python manage.py migrate
 RUN python manage.py collectstatic --noinput
 
 # Start Gunicorn server
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "myproject.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8008", "jobberwax.wsgi:application"]
