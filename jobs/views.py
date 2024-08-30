@@ -60,11 +60,12 @@ class PublicJobViewsets(ViewSet):
 class JobViewset(ViewSet):
     authentication_classes = [APIAuthentication]
 
-    def create(self, request):
+    @action(detail=False, methods=['post'], url_path='create')
+    def custom_create(self, request):
         payload = request.data
         required_field = ["title", "description", "organisation"]
         for field in required_field:
-            if payload.get(field) is None or len(payload.get(field)) < 3 or isinstance(payload.get("email"), str) is False:
+            if payload.get(field) is None or len(payload.get(field)) < 3 or isinstance(field, str) is False:
                 return Response(
                 data={
                     "code": 5,
@@ -95,6 +96,15 @@ class JobViewset(ViewSet):
                     "data": {"message": "Expected a dictionary '{}' on field"},
                 },
                 status=404,
+            )
+            if OrganisationUser.objects.filter(role="ORG_HR", user=request.user).exists() is False:
+                return Response(
+                data={
+                    "code": 4,
+                    "status": False,
+                    "data": {"message": "Only Organisation HR can perform this action"},
+                },
+                status=401,
             )
             job = Job(
                 created_by=request.user,
@@ -155,12 +165,63 @@ class JobViewset(ViewSet):
                     status=400,
                 )
         
+    
+    @action(detail=True, methods=["post"])
+    def apply(self, request, pk):
+        payload = request.data
+
+        try:
+            if Job.objects.filter(id=pk).exists() is False:
+                return Response(
+                    data={
+                        "status": False,
+                        "data": {"message": "Cannot get Organisation"},
+                    },
+                    status=404,
+                )
+            job = Job.objects.get(id=pk)
+            application = Application(
+                user=request.user,
+                resume=payload.get("resume"),
+                additional_data=payload.get("additional_data", {}),
+                status="UnderReview",
+                job=job,
+            )
+            application.save()
+            return Response(
+                    data={
+                        "status": True,
+                        "data": {"message": "Application Sent"},
+                    },
+                    status=201,
+                )
+        except Exception as exe:
+            return Response(
+                    data={
+                        "code": 4,
+                        "status": False,
+                        "data": {"message": f"{exe}"},
+                    },
+                    status=400,
+                )
+        
     def update(self, request, pk):
         payload = request.data
         try:
             job = Job.objects.get(id=pk)
+            if OrganisationUser.objects.filter(role="ORG_HR", user=request.user).exists() is False:
+                return Response(
+                data={
+                    "code": 4,
+                    "status": False,
+                    "data": {"message": "Only Organisation HR can perform this action"},
+                },
+                status=401)
+            
             serializer = JobSerializer(job, payload, partial=True)
-            #update endpoint here
+            serializer.is_valid()
+            serializer.update(job, payload)
+
             return Response(
                     data={
                         "status": True,

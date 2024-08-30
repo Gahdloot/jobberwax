@@ -4,20 +4,34 @@ from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.viewsets import ViewSet
+from rest_framework.viewsets import ViewSet, ModelViewSet
 from account.models import User, Organisation, OrganisationUser
 from account.authenticate import create_access_token, create_refresh_token
 from account.serializer import UserSerializer
+from drf_spectacular.utils import extend_schema
+from drf_yasg.utils import swagger_auto_schema
+from swagger.api_request import (
+    login_request,
+    login_response,
+    signup_request,
+    signup_response
+)
+
 
 
 class RegistrationViewSet(ViewSet):
     authentication_classes = []
 
+    #url path is set to create
+    # @extend_schema(request=signup_request, responses=signup_response)
+    @swagger_auto_schema(method='post', request_body=signup_request, responses=signup_response)
     @action(detail=False, methods=['post'], url_path='create')
     def custom_create(self, request):
         payload = request.data
 
+        #check that email is not non or blank
         if payload.get("email") is not None and isinstance(payload.get("email"), str) and len(payload.get("email")) > 4:
+            #check that mail doesn't exists
             if User.objects.filter(email=payload.get("email")).exists():
                 return Response(
                     data={
@@ -28,6 +42,7 @@ class RegistrationViewSet(ViewSet):
                     status=401,
                 )
             required_field = ["password", "first_name", "last_name"]
+            #check that other fields is not non or blank
             for field in required_field:
                 if payload.get(field) is None or len(payload.get(field)) < 3 or isinstance(payload.get("email"), str) is False:
                     return Response(
@@ -62,7 +77,7 @@ class RegistrationViewSet(ViewSet):
                 secure=True,
                 samesite="None",
             )
-            response.data = {"token": access_token, "user": user.id}
+            response.data = {"token": access_token, "user": UserSerializer(user).data}
             response.status_code = 200
             return response
         return Response(
@@ -73,7 +88,8 @@ class RegistrationViewSet(ViewSet):
                     },
                     status=401,
                 )
-    
+    @swagger_auto_schema(method='post', request_body=login_request, responses=login_response)
+    # @extend_schema(request=login_request, responses=login_response)
     @action(detail=False, methods=["post"])
     def login(self, request):
         payload = request.data
@@ -92,6 +108,7 @@ class RegistrationViewSet(ViewSet):
                     },
                     status=401,
                 )
+        #compare password hash
         if not hashers.check_password(payload["password"], user.password):
             print("wrong password")
             return Response(
@@ -102,6 +119,7 @@ class RegistrationViewSet(ViewSet):
                 },
                 status=401,
             )
+        #check that password is not blacklisted
         if user.is_blacklisted is True:
             return Response(
                 data={

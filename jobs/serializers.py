@@ -15,12 +15,13 @@ class JobSerializer(serializers.ModelSerializer):
 
 
     def update(self, instance, data):
-
+        
         instance.save()
     
     class Meta:
         model = Job
         fields = (
+            "id",
             "created_by",
             "organisation",
             "title",
@@ -41,12 +42,13 @@ class ApplicationSerializer(serializers.ModelSerializer):
 
 
     def update(self, instance, data):
-
+        instance.status = data.get("status", instance.status)
         instance.save()
     
     class Meta:
         model = Job
         fields = (
+            "id",
             "user",
             "additional_data",
             "resume",

@@ -40,7 +40,10 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "account",
     "rest_framework",
-    "jobs"
+    "jobs",
+    "drf_yasg",
+    'drf_spectacular'
+
 ]
 
 MIDDLEWARE = [
@@ -54,6 +57,11 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "jobberwax.urls"
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
 
 TEMPLATES = [
     {

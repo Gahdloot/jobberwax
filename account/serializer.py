@@ -5,7 +5,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
     def update(self, instance, data):
-
+        
         instance.save()
     
     class Meta:
